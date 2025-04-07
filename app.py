@@ -14,20 +14,19 @@ from bs4 import BeautifulSoup
 # ---------------------------
 # Download model from Google Drive if not present
 # ---------------------------
+MODEL_PATH = "model"
+ZIP_FILE = "model.zip"
+FILE_ID = "1xjlusQC6wk7uZo18t30SuObrmeapuN7t"  # e.g., "1AbCdEfGhIjKlMnOpQrStUvWxYz"
+
 @st.cache_resource
 def load_model():
-    MODEL_DIR = "all-MiniLM-L6-v2"
-    FILE_ID = "1ABCDEFgHIJKLMNOPQRST"  # ← Replace with your actual zip file ID
-    ZIP_FILE = "model.zip"
-
-    if not os.path.exists(MODEL_DIR):
+    if not os.path.exists(MODEL_PATH):
         st.info("Downloading model from Google Drive...")
         gdown.download(f"https://drive.google.com/uc?id={FILE_ID}", ZIP_FILE, quiet=False)
         with zipfile.ZipFile(ZIP_FILE, 'r') as zip_ref:
-            zip_ref.extractall(".")
-        os.remove(ZIP_FILE)
+            zip_ref.extractall(MODEL_PATH)
+    return SentenceTransformer(MODEL_PATH)
 
-    return SentenceTransformer(MODEL_DIR)
 
 # ---------------------------
 # Load local data files
