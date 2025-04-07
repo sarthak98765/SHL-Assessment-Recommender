@@ -1,6 +1,4 @@
 import streamlit as st
-st.set_page_config(page_title="SHL Assessment Recommender", layout="wide")
-
 import pandas as pd
 import numpy as np
 import os
@@ -11,26 +9,25 @@ from sklearn.metrics.pairwise import cosine_similarity
 import requests
 from bs4 import BeautifulSoup
 
+st.set_page_config(page_title="SHL Assessment Recommender", layout="wide")
+
 # ---------------------------
 # Download model from Google Drive if not present
 # ---------------------------
 @st.cache_resource
 def load_model():
-    FILE_ID = "1HPJAdLUS48hC0z3UN-JU3jWLPKFEKD6C"
+    MODEL_DIR = "all-MiniLM-L6-v2"
+    FILE_ID = "1TlFk7WRL0vNNWVOTq8BpQmxwuaBTjJt7"  # ✅ your correct ID
     ZIP_FILE = "model.zip"
 
-    if not os.path.exists("model"):
-        st.write("📥 Downloading model from Google Drive...")
-        url = f"https://drive.google.com/uc?id={FILE_ID}"
-        gdown.download(url, ZIP_FILE, quiet=False)
-
-        st.write("📦 Extracting model...")
+    if not os.path.exists(MODEL_DIR):
+        st.info("📥 Downloading model from Google Drive...")
+        gdown.download(f"https://drive.google.com/uc?id={FILE_ID}", ZIP_FILE, quiet=False)
         with zipfile.ZipFile(ZIP_FILE, 'r') as zip_ref:
-            zip_ref.extractall("model")
+            zip_ref.extractall(".")
+        os.remove(ZIP_FILE)
 
-    st.write("✅ Model loaded successfully.")
-    return SentenceTransformer("model")
-
+    return SentenceTransformer(MODEL_DIR)
 
 # ---------------------------
 # Load local data files
