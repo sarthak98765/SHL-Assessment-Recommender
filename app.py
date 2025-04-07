@@ -14,18 +14,22 @@ from bs4 import BeautifulSoup
 # ---------------------------
 # Download model from Google Drive if not present
 # ---------------------------
-MODEL_PATH = "model"
-ZIP_FILE = "model.zip"
-FILE_ID = "1xjlusQC6wk7uZo18t30SuObrmeapuN7t"  # e.g., "1AbCdEfGhIjKlMnOpQrStUvWxYz"
-
 @st.cache_resource
 def load_model():
-    if not os.path.exists(MODEL_PATH):
-        st.info("Downloading model from Google Drive...")
-        gdown.download(f"https://drive.google.com/uc?id={FILE_ID}", ZIP_FILE, quiet=False)
+    FILE_ID = "1HPJAdLUS48hC0z3UN-JU3jWLPKFEKD6C"
+    ZIP_FILE = "model.zip"
+
+    if not os.path.exists("model"):
+        st.write("📥 Downloading model from Google Drive...")
+        url = f"https://drive.google.com/uc?id={FILE_ID}"
+        gdown.download(url, ZIP_FILE, quiet=False)
+
+        st.write("📦 Extracting model...")
         with zipfile.ZipFile(ZIP_FILE, 'r') as zip_ref:
-            zip_ref.extractall(MODEL_PATH)
-    return SentenceTransformer(MODEL_PATH)
+            zip_ref.extractall("model")
+
+    st.write("✅ Model loaded successfully.")
+    return SentenceTransformer("model")
 
 
 # ---------------------------
