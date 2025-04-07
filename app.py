@@ -4,23 +4,30 @@ st.set_page_config(page_title="SHL Assessment Recommender", layout="wide")
 import pandas as pd
 import numpy as np
 import os
+import gdown
+import zipfile
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import requests
 from bs4 import BeautifulSoup
 
-MODEL_NAME = 'sentence-transformers/all-MiniLM-L6-v2'
-
 # ---------------------------
-# Download model if not present
+# Download model from Google Drive if not present
 # ---------------------------
 @st.cache_resource
 def load_model():
-    try:
-        return SentenceTransformer(MODEL_NAME)
-    except Exception as e:
-        st.error(f"Failed to load model from Hugging Face: {e}")
-        raise
+    MODEL_DIR = "all-MiniLM-L6-v2"
+    FILE_ID = "1ABCDEFgHIJKLMNOPQRST"  # ← Replace with your actual zip file ID
+    ZIP_FILE = "model.zip"
+
+    if not os.path.exists(MODEL_DIR):
+        st.info("Downloading model from Google Drive...")
+        gdown.download(f"https://drive.google.com/uc?id={FILE_ID}", ZIP_FILE, quiet=False)
+        with zipfile.ZipFile(ZIP_FILE, 'r') as zip_ref:
+            zip_ref.extractall(".")
+        os.remove(ZIP_FILE)
+
+    return SentenceTransformer(MODEL_DIR)
 
 # ---------------------------
 # Load local data files
@@ -82,7 +89,7 @@ if st.button("Recommend Assessments"):
                 extracted_text = extract_text_from_url(user_input)
                 st.subheader("🔎 Extracted Job Description Text")
                 st.write(extracted_text)
-                user_input = extracted_text  # use extracted text as input
+                user_input = extracted_text
 
             results = recommend_assessments(user_input)
 
