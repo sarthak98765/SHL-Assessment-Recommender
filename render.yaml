@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: shl-assessment-recommender
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run app.py --server.port $PORT
+    envVars:
+      - key: PORT
+        value: 10000
+    plan: free
